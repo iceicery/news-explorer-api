@@ -8,7 +8,6 @@ const getUserMe = (req, res, next) => {
     .then((user) => {
       if (!user) {
         res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND));
-        console.log('no data');
       }
       res.status(StatusCodes.OK).send(user);
     })
@@ -35,7 +34,7 @@ const createUser = (req, res, next) => {
             res.status(StatusCodes.BAD_REQUEST)
               .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
           }
-          res.status(StatusCodes.OK).send(data);
+          res.status(StatusCodes.CREATED).send(data);
         })
         .catch((err) => {
           if (err.name === 'validationError' || 'MongoError') {
@@ -52,7 +51,6 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        console.log('stop');
         res
           .status(StatusCodes.UNAUTHORIZED)
           .send({ message: 'Incorrect email or password' });
@@ -65,10 +63,9 @@ const login = (req, res, next) => {
           expiresIn: '7d',
         },
       );
-      res.send({ token });
+      res.status(StatusCodes.CREATED).send({ token });
     })
     .catch((err) => {
-      console.log(err);
       if (err.name === "Error") {
         res
           .status(StatusCodes.UNAUTHORIZED)

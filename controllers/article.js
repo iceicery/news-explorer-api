@@ -1,5 +1,6 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const Article = require('../models/article');
+const user = require('../models/user');
 
 const getArticles = (req, res, next) => {
   Article.find({})
@@ -15,14 +16,14 @@ const getArticles = (req, res, next) => {
 const createArticles = (req, res, next) => {
   const { keyword, title, text, date, source, link, image } = req.body;
   const article = new Article({
-    keyword, title, text, date, source, link, image
+    keyword, title, text, date, source, link, image, owner: req.user._id
   });
   article.save()
     .then((data) => {
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST).send(getReasonPhrase(StatusCodes.BAD_REQUEST));
       }
-      res.status(StatusCodes.OK).send(data);
+      res.status(StatusCodes.CREATED).send(data);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
