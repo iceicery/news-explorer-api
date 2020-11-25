@@ -2,11 +2,9 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const user = require('../models/user');
-const { get } = require('mongoose');
 
 const getUserMe = (req, res, next) => {
-  User.findById("5fbdd6dd71fbb0b2d35b4807")
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND));
@@ -41,11 +39,43 @@ const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'validationError' || 'MongoError') {
-            return res.status(StatusCodes.BAD_REQUEST);
+            res.status(StatusCodes.BAD_REQUEST)
+              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
           }
           next(err);
         });
     });
 };
 
-module.exports = { getUserMe, createUser };
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      if (!user) {
+        console.log('stop');
+        res
+          .status(StatusCodes.UNAUTHORIZED)
+          .send({ message: 'Incorrect email or password' });
+      }
+      const secretKeyDev = '873d6954eb73e83cdd4c3de9bca3a3ed224985c687777119c6c3564c87b9e7e9';
+      const token = jwt.sign(
+        { _id: user._id },
+        secretKeyDev,
+        {
+          expiresIn: '7d',
+        },
+      );
+      res.send({ token });
+    })
+    .catch((err) => {
+      console.log(err);
+      if (err.name === "Error") {
+        res
+          .status(StatusCodes.UNAUTHORIZED)
+          .send({ message: 'Incorrect email or password' });
+      }
+      next(err);
+    });
+};
+
+module.exports = { getUserMe, createUser, login };

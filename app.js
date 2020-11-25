@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const userRouter = require('./routes/user');
 const articleRouter = require('./routes/article');
-const { createUser } = require('./controllers/user');
+const { createUser, login } = require('./controllers/user');
+const auth = require('./middleware/auth');
+const { StatusCodes } = require('http-status-codes');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -23,8 +25,13 @@ app.get('/crash-test', () => {
   }, 0);
 });
 app.post('/signup', createUser);
-app.use('/users', userRouter);
-app.use('/articles', articleRouter);
+app.post('/signin', login);
+app.use('/users', auth, userRouter);
+app.use('/articles', auth, articleRouter);
+app.use((req, res) => {
+  res.status(StatusCodes.NOT_FOUND)
+    .send({ message: 'Requested resource not found' });
+})
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode)
