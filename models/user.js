@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validatorpkg(v) {
+      validator(v) {
         return validatorpkg.isEmail(v);
       },
       message: 'please enter an email',

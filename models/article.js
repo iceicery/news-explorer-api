@@ -26,7 +26,7 @@ const articleSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        validatorPkg.isURL(v);
+        return validatorPkg.isURL(v);
       },
       message: 'please enter valid url',
     }
@@ -36,7 +36,7 @@ const articleSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        validatorPkg.isURL(v);
+        return validatorPkg.isURL(v);
       },
       message: 'please enter valid url',
     },
