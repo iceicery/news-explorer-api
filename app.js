@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const userRouter = require('./routes/user');
 const articleRouter = require('./routes/article');
+const { createUser } = require('./controllers/user');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -21,6 +22,7 @@ app.get('/crash-test', () => {
     throw new Error('Server will crash now');
   }, 0);
 });
+app.post('/signup', createUser);
 app.use('/users', userRouter);
 app.use('/articles', articleRouter);
 app.use((err, req, res, next) => {
