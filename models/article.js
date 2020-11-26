@@ -42,10 +42,31 @@ const articleSchema = new mongoose.Schema({
     },
   },
   owner: {
+    type: String,
+    required: true,
     select: false,
   }
+});
 
-
-})
+articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
+  return this.findById(articleID).select('owner')
+    .then((article) => {
+      if (!article) {
+        return Promise.reject(new Error('no article'))
+          .catch((err) => { console.log(err) });
+      }
+      console.log(article);
+      console.log(userId);
+      if (article.owner !== userId) {
+        return Promise.reject(new Error('not owner'))
+          .catch((err) => { console.log(err) });
+      }
+      this.deleteOne();
+      return article;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 module.exports = mongoose.model('article', articleSchema);

@@ -15,8 +15,16 @@ const getArticles = (req, res, next) => {
 
 const createArticles = (req, res, next) => {
   const { keyword, title, text, date, source, link, image } = req.body;
+  console.log(req.user._id);
   const article = new Article({
-    keyword, title, text, date, source, link, image, owner: req.user._id
+    keyword,
+    title,
+    text,
+    date,
+    source,
+    link,
+    image,
+    owner: req.user._id,
   });
   article.save()
     .then((data) => {
@@ -34,8 +42,10 @@ const createArticles = (req, res, next) => {
     })
 }
 
+
+
 const deleteArticles = (req, res, next) => {
-  Article.findByIdAndRemove(req.params.articleId)
+  Article.removeArticleByOwner(req.params.articleId, req.user._id)
     .then((data) => {
       if (!data) {
         res.status(StatusCodes.NOT_FOUND).send({ message: getReasonPhrase(StatusCodes.NOT_FOUND) });
@@ -48,7 +58,9 @@ const deleteArticles = (req, res, next) => {
           .send({ message: getReasonPhrase(StatusCodes.NOT_FOUND) });
       }
       next(err);
-    });
+    })
 }
+
+
 
 module.exports = { getArticles, createArticles, deleteArticles };
