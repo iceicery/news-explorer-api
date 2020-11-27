@@ -44,8 +44,16 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
-app.use('/users', auth, userRouter);
-app.use('/articles', auth, articleRouter);
+app.use('/users', celebrate({
+  headers: Joi.object().keys({
+    authorization: Joi.string().required(),
+  }).unknown(true),
+}), auth, userRouter);
+app.use('/articles', celebrate({
+  headers: Joi.object().keys({
+    authorization: Joi.string().required(),
+  }).unknown(true),
+}), auth, articleRouter);
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND)
     .send({ message: 'Requested resource not found' });
