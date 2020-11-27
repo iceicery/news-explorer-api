@@ -4,13 +4,17 @@ const bodyParser = require('body-parser');
 const { StatusCodes } = require('http-status-codes');
 const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
+const helmet = require('helmet');
 const userRouter = require('./routes/user');
 const articleRouter = require('./routes/article');
 const { createUser, login } = require('./controllers/user');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
+const { limiter } = require('./middleware/limiter');
 
 const app = express();
+app.use(limiter);
+app.use(helmet());
 const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 mongoose.connect('mongodb://localhost:27017/admin',

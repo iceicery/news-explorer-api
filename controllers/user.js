@@ -2,7 +2,9 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+require('dotenv').config();
 
+const { NODE_ENV, JWT_SECRET } = process.env;
 const getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -62,7 +64,7 @@ const login = (req, res, next) => {
       const secretKeyDev = '873d6954eb73e83cdd4c3de9bca3a3ed224985c687777119c6c3564c87b9e7e9';
       const token = jwt.sign(
         { _id: user._id },
-        secretKeyDev,
+        NODE_ENV === 'production' ? JWT_SECRET : secretKeyDev,
         {
           expiresIn: '7d',
         },
