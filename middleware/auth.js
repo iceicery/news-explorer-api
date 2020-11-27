@@ -1,6 +1,8 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
+const { NODE_ENV, JWT_SECRET } = process.env;
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer')) {
@@ -9,10 +11,9 @@ const auth = (req, res, next) => {
       .send({ message: getReasonPhrase(StatusCodes.UNAUTHORIZED) });
   }
   const token = authorization.replace('Bearer ', '');
-  const secretKeyDev = '873d6954eb73e83cdd4c3de9bca3a3ed224985c687777119c6c3564c87b9e7e9';
   let payload;
   try {
-    payload = jwt.verify(token, secretKeyDev);
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'secretKeyDev');
   } catch (err) {
     res
       .status(StatusCodes.UNAUTHORIZED)
