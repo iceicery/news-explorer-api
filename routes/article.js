@@ -1,5 +1,5 @@
 const articleRouter = require('express').Router();
-const { getArticles, createArticles, deleteArticles, checkOwner } = require('../controllers/article');
+const { getArticles, createArticles, deleteArticles } = require('../controllers/article');
 
 articleRouter.get('/', getArticles);
 articleRouter.post('/', createArticles);

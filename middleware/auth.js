@@ -1,11 +1,12 @@
-const { StatusCodes, getReasonPhrase } = require("http-status-codes");
+const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
+
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer')) {
-    return res
+    res
       .status(StatusCodes.UNAUTHORIZED)
-      .send({ message: getReasonPhrase(StatusCodes.UNAUTHORIZED) })
+      .send({ message: getReasonPhrase(StatusCodes.UNAUTHORIZED) });
   }
   const token = authorization.replace('Bearer ', '');
   const secretKeyDev = '873d6954eb73e83cdd4c3de9bca3a3ed224985c687777119c6c3564c87b9e7e9';
@@ -20,6 +21,6 @@ const auth = (req, res, next) => {
   }
   req.user = payload;
   next();
-}
+};
 
 module.exports = auth;

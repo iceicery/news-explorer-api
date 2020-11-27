@@ -10,7 +10,6 @@ const { createUser, login } = require('./controllers/user');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 
-
 const app = express();
 const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
@@ -49,7 +48,7 @@ app.use((req, res) => {
 });
 app.use(errors());
 app.use(errorLogger);
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode)
     .send({

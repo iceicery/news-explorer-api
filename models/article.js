@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validatorPkg = require('validator');
+
 const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
@@ -29,7 +30,7 @@ const articleSchema = new mongoose.Schema({
         return validatorPkg.isURL(v);
       },
       message: 'please enter valid url',
-    }
+    },
   },
   image: {
     type: String,
@@ -45,7 +46,7 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
-  }
+  },
 });
 
 articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
@@ -53,13 +54,11 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
     .then((article) => {
       if (!article) {
         return Promise.reject(new Error('no article'))
-          .catch((err) => { console.log(err) });
+          .catch((err) => { console.log(err); });
       }
-      console.log(article);
-      console.log(userId);
       if (article.owner !== userId) {
         return Promise.reject(new Error('not owner'))
-          .catch((err) => { console.log(err) });
+          .catch((err) => { console.log(err); });
       }
       this.deleteOne();
       return article;
@@ -67,6 +66,6 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
     .catch((err) => {
       console.log(err);
     });
-}
+};
 
 module.exports = mongoose.model('article', articleSchema);

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validatorpkg = require('validator');
 const bcrypt = require('bcrypt');
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema({
         return validatorpkg.isEmail(v);
       },
       message: 'please enter an email',
-    }
+    },
   },
   password: {
     type: String,
@@ -23,7 +24,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
-  }
+  },
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
@@ -40,6 +41,6 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           return user;
         });
     });
-}
+};
 
 module.exports = mongoose.model('user', userSchema);

@@ -13,7 +13,7 @@ const getUserMe = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND))
+        res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND));
       }
       next(err);
     });
@@ -37,7 +37,11 @@ const createUser = (req, res, next) => {
           res.status(StatusCodes.CREATED).send(data);
         })
         .catch((err) => {
-          if (err.name === 'validationError' || 'MongoError') {
+          if (err.name === 'validationError') {
+            res.status(StatusCodes.BAD_REQUEST)
+              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
+          }
+          if (err.name === 'MongoError') {
             res.status(StatusCodes.BAD_REQUEST)
               .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
           }
@@ -66,7 +70,7 @@ const login = (req, res, next) => {
       res.status(StatusCodes.CREATED).send({ token });
     })
     .catch((err) => {
-      if (err.name === "Error") {
+      if (err.name === 'Error') {
         res
           .status(StatusCodes.UNAUTHORIZED)
           .send({ message: 'Incorrect email or password' });
