@@ -2,9 +2,8 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-require('dotenv').config();
+const { NODE_ENV, JWT_SECRET } = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
 const getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
