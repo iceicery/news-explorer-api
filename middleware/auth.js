@@ -1,7 +1,7 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const UnauthorizeError = require('../errors/unauthorized');
-const { NODE_ENV, JWT_SECRET } = require('../utils/constants');
+const { NODE_ENV, JWT_SECRET } = require('../utils/getKey');
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
