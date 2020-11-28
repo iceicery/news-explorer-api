@@ -5,12 +5,12 @@ const { StatusCodes } = require('http-status-codes');
 const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
-const userRouter = require('./routes/user');
-const articleRouter = require('./routes/article');
+const mainRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/user');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { limiter } = require('./middleware/limiter');
+const ServerError = require('./errors/server-error');
 
 const app = express();
 app.use(limiter);
@@ -44,29 +44,16 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
-app.use('/users', celebrate({
+app.use('/', celebrate({
   headers: Joi.object().keys({
     authorization: Joi.string().required(),
   }).unknown(true),
-}), auth, userRouter);
-app.use('/articles', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(true),
-}), auth, articleRouter);
+}), auth, mainRouter);
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND)
     .send({ message: 'Requested resource not found' });
 });
 app.use(errors());
 app.use(errorLogger);
-app.use((err, req, res) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'An error occurred on the server'
-        : message,
-    });
-});
+app.use(ServerError);
 app.listen(PORT);
