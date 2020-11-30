@@ -7,7 +7,6 @@ const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
 const mainRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/user');
-const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { limiter } = require('./middleware/limiter');
 const ServerError = require('./errors/server-error');
@@ -44,11 +43,7 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
-app.use('/', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(true),
-}), auth, mainRouter);
+app.use('/', mainRouter);
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND)
     .send({ message: 'Requested resource not found' });

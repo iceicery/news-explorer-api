@@ -41,12 +41,12 @@ const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'validationError') {
-            res.status(err.statusCode)
-              .send({ message: err.message });
+            res.status(StatusCodes.BAD_REQUEST)
+              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
           }
           if (err.name === 'MongoError') {
-            res.status(err.statusCode)
-              .send({ message: err.message });
+            res.status(StatusCodes.BAD_REQUEST)
+              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
           }
           next(err);
         });
@@ -72,8 +72,8 @@ const login = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'Error') {
         res
-          .status(err.statusCode)
-          .send({ message: err.message });
+          .status(StatusCodes.UNAUTHORIZED)
+          .send({ message: 'Incorrect email or password' });
       }
       next(err);
     });
