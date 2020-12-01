@@ -17,7 +17,7 @@ const getUserMe = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(err.statusCode).send(err.message);
+        res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND));
       }
       next(err);
     });
@@ -37,7 +37,7 @@ const createUser = (req, res, next) => {
           if (!data) {
             throw new BadRequestError(getReasonPhrase(StatusCodes.BAD_REQUEST));
           }
-          res.status(StatusCodes.CREATED).send(data);
+          res.status(StatusCodes.CREATED).send({ email: data.email, name: data.name });
         })
         .catch((err) => {
           if (err.name === 'validationError') {

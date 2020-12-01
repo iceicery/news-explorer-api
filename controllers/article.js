@@ -3,7 +3,7 @@ const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found');
 const Article = require('../models/article');
 
-const getArticles = (req, res, next) => {
+const getArticles = (req, res) => {
   Article.find({})
     .then((article) => {
       if (!article) {
