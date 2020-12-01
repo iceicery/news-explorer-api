@@ -1,5 +1,7 @@
+const { getReasonPhrase, StatusCodes } = require('http-status-codes');
 const mongoose = require('mongoose');
 const validatorPkg = require('validator');
+const NotFoundError = require('../errors/not-found');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
@@ -60,8 +62,16 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
         return Promise.reject(new Error('not owner'))
           .catch((err) => { console.log(err); });
       }
-      this.deleteOne();
-      return article;
+      return this.findByIdAndRemove(articleID)
+        .then((card) => {
+          if (!card) {
+            throw new NotFoundError(getReasonPhrase(StatusCodes.NOT_FOUND));
+          }
+          return card;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
