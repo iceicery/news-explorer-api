@@ -10,13 +10,14 @@ const { createUser, login } = require('./controllers/user');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { limiter } = require('./middleware/limiter');
 const ServerError = require('./errors/server-error');
+const mongolink = require('./config/mongo-link');
 
 const app = express();
 app.use(limiter);
 app.use(helmet());
 const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
-mongoose.connect('mongodb://localhost:27017/admin',
+mongoose.connect(mongolink,
   {
     useNewUrlParser: true,
     useCreateIndex: true,

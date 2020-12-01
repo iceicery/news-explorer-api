@@ -1,7 +1,8 @@
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const UnauthorizeError = require('../errors/unauthorized');
-const { NODE_ENV, JWT_SECRET } = require('../utils/getKey');
+const { NODE_ENV, JWT_SECRET } = require('../config/get-key');
+const secretKeyDev = require('../config/dev-key');
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
@@ -11,7 +12,7 @@ const auth = (req, res, next) => {
   const token = authorization.replace('Bearer ', '');
   let payload;
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'secretKeyDev');
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : secretKeyDev);
   } catch (err) {
     res
       .status(StatusCodes.UNAUTHORIZED)

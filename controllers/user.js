@@ -2,7 +2,8 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const { NODE_ENV, JWT_SECRET } = require('../utils/getKey');
+const { NODE_ENV, JWT_SECRET } = require('../config/get-key');
+const secretKeyDev = require('../config/dev-key');
 const UnauthorizeError = require('../errors/unauthorized');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found');
@@ -62,7 +63,7 @@ const login = (req, res, next) => {
       }
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'secretKeyDev',
+        NODE_ENV === 'production' ? JWT_SECRET : secretKeyDev,
         {
           expiresIn: '7d',
         },
