@@ -1,9 +1,10 @@
-const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found');
 const Article = require('../models/article');
+const errmessage = require('../const/err-message');
 
-const getArticles = (req, res) => {
+const getArticles = (req, res, next) => {
   Article.find({})
     .then((article) => {
       if (!article) {
@@ -11,12 +12,7 @@ const getArticles = (req, res) => {
       }
       res.status(StatusCodes.OK).send(article);
     })
-    .catch((err) => {
-      if (err.name === 'Error') {
-        res.status(StatusCodes.NOT_FOUND)
-          .send({ message: getReasonPhrase(StatusCodes.NOT_FOUND) });
-      }
-    });
+    .catch(next);
 };
 
 const createArticles = (req, res, next) => {
@@ -36,34 +32,27 @@ const createArticles = (req, res, next) => {
   article.save()
     .then((data) => {
       if (!data) {
-        throw new BadRequestError(getReasonPhrase(StatusCodes.BAD_REQUEST));
+        throw new BadRequestError(errmessage.badRequest);
       }
       res.status(StatusCodes.CREATED).send(data);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(StatusCodes.BAD_REQUEST)
-          .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
+        throw new BadRequestError(errmessage.badRequest);
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const deleteArticles = (req, res, next) => {
   Article.removeArticleByOwner(req.params.articleId, req.user._id)
     .then((data) => {
       if (!data) {
-        throw new NotFoundError('article not found');
+        throw new NotFoundError(errmessage.notFound);
       }
       res.status(StatusCodes.OK).send(data);
     })
-    .catch((err) => {
-      if (err.name === 'Error') {
-        res.status(StatusCodes.NOT_FOUND)
-          .send({ message: getReasonPhrase(StatusCodes.NOT_FOUND) });
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports = { getArticles, createArticles, deleteArticles };

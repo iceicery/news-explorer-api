@@ -1,4 +1,4 @@
-const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
@@ -7,21 +7,22 @@ const secretKeyDev = require('../config/dev-key');
 const UnauthorizeError = require('../errors/unauthorized');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found');
+const errmessage = require('../const/err-message');
 
 const getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('user not found');
+        throw new NotFoundError(errmessage.notFound);
       }
       res.status(StatusCodes.OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(StatusCodes.NOT_FOUND).send(getReasonPhrase(StatusCodes.NOT_FOUND));
+        throw new NotFoundError(errmessage.notFound);
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -36,22 +37,21 @@ const createUser = (req, res, next) => {
       user.save()
         .then((data) => {
           if (!data) {
-            throw new BadRequestError(getReasonPhrase(StatusCodes.BAD_REQUEST));
+            throw new BadRequestError(errmessage.badRequest);
           }
           res.status(StatusCodes.CREATED).send({ email: data.email, name: data.name });
         })
         .catch((err) => {
           if (err.name === 'validationError') {
-            res.status(StatusCodes.BAD_REQUEST)
-              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
+            throw new BadRequestError(errmessage.badRequest);
           }
           if (err.name === 'MongoError') {
-            res.status(StatusCodes.BAD_REQUEST)
-              .send({ message: getReasonPhrase(StatusCodes.BAD_REQUEST) });
+            throw new BadRequestError(errmessage.badRequest);
           }
-          next(err);
-        });
-    });
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -70,14 +70,7 @@ const login = (req, res, next) => {
       );
       res.status(StatusCodes.CREATED).send({ token });
     })
-    .catch((err) => {
-      if (err.name === 'Error') {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .send({ message: 'Incorrect email or password' });
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports = { getUserMe, createUser, login };

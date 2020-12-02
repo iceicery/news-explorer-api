@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { StatusCodes } = require('http-status-codes');
 const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
@@ -9,9 +8,10 @@ const mainRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/user');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { limiter } = require('./middleware/limiter');
-const ServerError = require('./errors/server-error');
+const { CentralizedError } = require('./middleware/centralized-error');
 const mongolink = require('./config/mongo-link');
 const errmessage = require('./const/err-message');
+const NotFoundError = require('./errors/not-found');
 
 const app = express();
 app.use(limiter);
@@ -46,11 +46,10 @@ app.post('/signin', celebrate({
   }),
 }), login);
 app.use('/', mainRouter);
-app.use((req, res) => {
-  res.status(StatusCodes.NOT_FOUND)
-    .send({ message: errmessage.requestNotFound });
+app.use(() => {
+  throw new NotFoundError(errmessage.requestNotFound);
 });
 app.use(errors());
 app.use(errorLogger);
-app.use(ServerError);
+app.use(CentralizedError);
 app.listen(PORT);
