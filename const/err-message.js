@@ -4,6 +4,12 @@ const errmessage = {
   serverCrash: 'Server will crash now',
   notFound: 'Not Found',
   badRequest: 'Bad Request',
+  unAuth: 'Unauthorized',
+  notOwner: 'Unauthorized:Not the owner',
+  wrongEmail: 'Unauthorized: Incorrect Email',
+  wrongPwd: 'Unauthorized: Incorrect Password',
+  enterEmail: 'Please enter an email.',
+  enterUrl: 'Please enter an valid link',
 };
 
 module.exports = errmessage;

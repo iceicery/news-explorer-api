@@ -1,7 +1,8 @@
-const { getReasonPhrase, StatusCodes } = require('http-status-codes');
 const mongoose = require('mongoose');
 const validatorPkg = require('validator');
 const NotFoundError = require('../errors/not-found');
+const errmessage = require('../const/err-message');
+const UnauthorizeError = require('../errors/unauthorized');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
@@ -31,7 +32,7 @@ const articleSchema = new mongoose.Schema({
       validator(v) {
         return validatorPkg.isURL(v);
       },
-      message: 'please enter valid url',
+      message: errmessage.enterUrl,
     },
   },
   image: {
@@ -41,7 +42,7 @@ const articleSchema = new mongoose.Schema({
       validator(v) {
         return validatorPkg.isURL(v);
       },
-      message: 'please enter valid url',
+      message: errmessage.enterUrl,
     },
   },
   owner: {
@@ -55,22 +56,17 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
   return this.findById(articleID).select('owner')
     .then((article) => {
       if (!article) {
-        return Promise.reject(new Error('no article'))
-          .catch((err) => { console.log(err); });
+        throw new NotFoundError(errmessage.notFound);
       }
       if (article.owner !== userId) {
-        return Promise.reject(new Error('not owner'))
-          .catch((err) => { console.log(err); });
+        throw new UnauthorizeError(errmessage.notOwner);
       }
       return this.findByIdAndRemove(articleID)
         .then((card) => {
           if (!card) {
-            throw new NotFoundError(getReasonPhrase(StatusCodes.NOT_FOUND));
+            throw new NotFoundError(errmessage.notFound);
           }
           return card;
-        })
-        .catch((err) => {
-          console.log(err);
         });
     })
     .catch((err) => {
