@@ -11,6 +11,7 @@ const { requestLogger, errorLogger } = require('./middleware/logger');
 const { limiter } = require('./middleware/limiter');
 const ServerError = require('./errors/server-error');
 const mongolink = require('./config/mongo-link');
+const errmessage = require('./const/err-message');
 
 const app = express();
 app.use(limiter);
@@ -27,7 +28,7 @@ mongoose.connect(mongolink,
 app.use(cors());
 app.get('/crash-test', () => {
   setTimeout(() => {
-    throw new Error('Server will crash now');
+    throw new Error(errmessage.serverCrash);
   }, 0);
 });
 app.use(requestLogger);
@@ -47,7 +48,7 @@ app.post('/signin', celebrate({
 app.use('/', mainRouter);
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND)
-    .send({ message: 'Requested resource not found' });
+    .send({ message: errmessage.requestNotFound });
 });
 app.use(errors());
 app.use(errorLogger);
