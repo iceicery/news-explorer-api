@@ -8,7 +8,7 @@ const getArticles = (req, res, next) => {
   Article.find({})
     .then((article) => {
       if (!article) {
-        throw new NotFoundError('articles not found');
+        throw new NotFoundError(errmessage.notFound);
       }
       res.status(StatusCodes.OK).send(article);
     })
