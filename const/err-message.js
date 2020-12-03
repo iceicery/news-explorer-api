@@ -5,11 +5,12 @@ const errmessage = {
   notFound: 'Not Found',
   badRequest: 'Bad Request',
   unAuth: 'Unauthorized',
-  notOwner: 'Unauthorized:Not the owner',
+  notOwner: 'Unauthorized: Not the owner',
   wrongEmail: 'Unauthorized: Incorrect Email',
   wrongPwd: 'Unauthorized: Incorrect Password',
   enterEmail: 'Please enter an email.',
   enterUrl: 'Please enter an valid link',
+  duplicateEmail: 'Conflict: Email has been used',
 };
 
 module.exports = errmessage;

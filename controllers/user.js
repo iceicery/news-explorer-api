@@ -8,6 +8,7 @@ const UnauthorizeError = require('../errors/unauthorized');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found');
 const errmessage = require('../const/err-message');
+const ConflictErr = require('../errors/conflict-err');
 
 const getUserMe = (req, res, next) => {
   User.findById(req.user._id)
@@ -46,7 +47,7 @@ const createUser = (req, res, next) => {
             throw new BadRequestError(errmessage.badRequest);
           }
           if (err.name === 'MongoError') {
-            throw new BadRequestError(errmessage.badRequest);
+            throw new ConflictErr(errmessage.duplicateEmail);
           }
         })
         .catch(next);
