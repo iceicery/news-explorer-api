@@ -48,7 +48,7 @@ const deleteArticles = (req, res, next) => {
   Article.removeArticleByOwner(req.params.articleId, req.user._id)
     .then((data) => {
       if (!data) {
-        throw new NotFoundError(errmessage.notFound);
+        throw new BadRequestError(errmessage.badRequest);
       }
       res.status(StatusCodes.OK).send(data);
     })

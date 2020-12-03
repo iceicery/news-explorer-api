@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const validatorPkg = require('validator');
-const NotFoundError = require('../errors/not-found');
 const errmessage = require('../const/err-message');
-const UnauthorizeError = require('../errors/unauthorized');
+const BadRequestError = require('../errors/bad-request');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
@@ -56,15 +55,15 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
   return this.findById(articleID).select('owner')
     .then((article) => {
       if (!article) {
-        throw new NotFoundError(errmessage.notFound);
+        throw new BadRequestError(errmessage.notId);
       }
       if (article.owner !== userId) {
-        throw new UnauthorizeError(errmessage.notOwner);
+        throw new BadRequestError(errmessage.notOwner);
       }
       return this.findByIdAndRemove(articleID)
         .then((card) => {
           if (!card) {
-            throw new NotFoundError(errmessage.notFound);
+            throw new BadRequestError(errmessage.badRequest);
           }
           return card;
         });
