@@ -10,6 +10,6 @@
 
 ## Link:
 
-### https://api.findnews.students.nomoreparties.site/
+### https://api.newsfinder.students.nomoreparties.site/
 
-### https://www.api.findnews.students.nomoreparties.site/
+### https://www.api.newsfinder.students.nomoreparties.site/
