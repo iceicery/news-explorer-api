@@ -5,12 +5,12 @@ const Article = require('../models/article');
 const errmessage = require('../const/err-message');
 
 const getArticles = (req, res, next) => {
-  Article.find({})
-    .then((article) => {
-      if (!article) {
+  Article.getArticlesByOwner(req.user._id)
+    .then((data) => {
+      if (!data) {
         throw new NotFoundError(errmessage.notFound);
       }
-      res.status(StatusCodes.OK).send(article);
+      res.status(StatusCodes.OK).send(data);
     })
     .catch(next);
 };

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validatorPkg = require('validator');
 const errmessage = require('../const/err-message');
 const BadRequestError = require('../errors/bad-request');
+const NotFoundError = require('../errors/not-found');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
@@ -67,6 +68,19 @@ articleSchema.statics.removeArticleByOwner = function (articleID, userId) {
           }
           return card;
         });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+articleSchema.statics.getArticlesByOwner = function (userId) {
+  return this.find({ owner: userId })
+    .then((articles) => {
+      if (!articles) {
+        throw new NotFoundError(errmessage.notFound);
+      }
+      return articles;
     })
     .catch((err) => {
       console.log(err);
